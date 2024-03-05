@@ -1,0 +1,322 @@
+package Doctor;
+import Patient.Patient;
+
+import java.util.*;
+
+public class Doctor {
+    private int did;
+    static int c = 0;
+    private String dname;
+    private String spec;
+    private boolean available;
+    private float rating;
+    private int yearsofexperience;
+    private ArrayList<String> review=new ArrayList<String>();
+
+   public Doctor(String dname, String spec,float rating,int yearsofexperience) {
+        this.did = ++c;
+        this.dname = dname;
+        this.spec = spec;
+        this.available = true;
+        this.rating=rating;
+        this.yearsofexperience=yearsofexperience;
+    }
+
+   public int getDid() {
+        return did;
+    }
+
+   public String getDname() {
+        return dname;
+    }
+
+    public String getSpec() {
+        return spec;
+    }
+
+   public boolean isAvailable() {
+        return available;
+    }
+   public int getyearsofexperience(){
+        return yearsofexperience;
+    }
+   public float getrating(){
+        return rating;
+    }
+   public void setRating(float r)
+    {
+        this.rating=(rating+r)/2;
+    }
+   public void setAvailability(boolean availability) {
+        this.available = availability;
+    }
+    public void setReview(String s){
+        review.add(s);
+    }
+    public void  getReview(){
+        for(int i=0;i<review.size();i++){
+            System.out.println(review.get(i)+"review");
+        }
+    }
+
+
+}
+
+
+PATIENT
+
+
+
+
+package Patient;
+import Doctor.Doctor;
+public class Patient {
+    private int pid;
+    static int c = 0;
+    private String pname;
+    private String problem;
+    private String specialist;
+    
+
+    public Patient(String pname, String problem, String specialist) {
+        this.pid = ++c;
+        this.pname = pname;
+        this.problem = problem;
+        this.specialist = specialist;
+    }
+
+   public  int getPid() {
+        return pid;
+    }
+
+   public String getPname() {
+        return pname;
+    }
+
+   public String getProblem() {
+        return problem;
+    }
+
+  public  String getSpecialist() {
+        return specialist;
+    }
+
+   
+
+   public void setRating(float r,Doctor d) {
+        d.setRating(r);
+    }
+  public  void setReview(Doctor d,String s){
+        d.setReview(s);
+    }
+    
+
+   
+
+}
+TREATMENT
+
+
+
+package Treatment;
+
+import java.util.*;
+import Doctor.Doctor;
+import Patient.Patient;
+
+public class Treatment {
+    private Scanner sc = new Scanner(System.in);
+    private Patient patient;
+    private Doctor doctor;
+    private String medicine;
+
+   public  Treatment(Patient patient, Doctor doctor) {
+        this.patient = patient;
+        this.doctor = doctor;
+    }
+
+   public void doTreatment() {
+        doctor.setAvailability(false);
+        System.out.println("ID: " + patient.getPid() + ", Name: " + patient.getPname());
+        System.out.println(patient.getProblem());
+
+        System.out.println("Enter medicine:");
+        medicine = sc.nextLine();
+
+    }
+   public String getMedicine() {
+        return medicine;
+    }
+}
+	SQL
+
+
+
+import java.sql.*;
+
+ public class Sql{
+    static final   String url="jdbc:mysql://localhost:3306/southwind";
+    static final   String username="root";
+    static final   String password="Nehas123";
+    public static Connection connect (){
+
+    
+        try {
+            Connection conn = DriverManager.getConnection(url, username, password);
+            Statement statement=conn.createStatement();
+            String sql="select * from emp";
+ 
+            ResultSet resultSet=statement.executeQuery(sql);
+
+return null;
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
+        return null;
+    }
+    public static void main(String[] args) {
+        
+    }
+//     public static void main(String[] args) {
+//          String url="jdbc:mysql://localhost:3306/southwind";
+//      String username="root";
+//        String password="Nehas123";
+//                 try {
+//           Class.forName("com.mysql.cj.jdbc.Driver");
+//             Connection conn = DriverManager.getConnection(url, username, password);
+//            Statement statement=conn.createStatement();
+//            String sql="select * from emp";
+
+//            ResultSet resultSet=statement.executeQuery(sql);
+//         // String sql="give sql queries"
+         
+// while(resultSet.next()){
+//     System.out.println(resultSet.getString(1)+" "+resultSet.getString(3)+" "+resultSet.getString(4));
+// }
+// statement.close();
+//          conn.close();
+//         }
+//         catch(Exception e){
+//             System.out.println(e);
+//         }
+        
+//     }
+}
+
+
+
+
+APP
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.sql.*;
+
+import Patient.Patient;
+import Treatment.Treatment;
+import Doctor.Doctor;
+
+public class App {
+    public static void main(String[] args) {
+        Connection conn=Sql.connect();
+        Scanner sc = new Scanner(System.in);
+
+        ArrayList<Doctor> doctors = new ArrayList<>();
+        doctors.add(new Doctor("sai", "orthology",3.5f,4));
+        doctors.add(new Doctor("ram", "orthology",3.5f,4));
+        doctors.add(new Doctor("ram", "cardiology",3.5f,4));
+        doctors.add(new Doctor("sham", "cardiology",3.5f,4));
+        doctors.add(new Doctor("nehas", "neurology",3.5f,4));
+        doctors.add(new Doctor("chandu", "neurology",3.5f,4));
+        doctors.add(new Doctor("bhuvan", "gastrology",3.5f,4));
+        doctors.add(new Doctor("karrem", "gastrology",3.5f,4));
+        doctors.add(new Doctor("tarun", "ent",3.5f,4));
+        //patient
+        ArrayList<Patient> patients = new ArrayList<>();
+        System.out.println("enter patient details:");
+        System.out.println("enter patient name:");
+        String s=sc.next();
+        System.out.println("enter problem:");
+        String s1=sc.next();
+        System.out.println("enter specialist required:");
+        String s2=sc.next();
+        patients.add(new Patient(s,s1,s2));
+
+        
+        ArrayList<Treatment> treatments = new ArrayList<>();      
+        ArrayList<Doctor> availableDoctors = search(doctors,patients.get(0).getSpecialist());
+        for (Doctor availableDoctor : availableDoctors) {
+            System.out.println("Available doctor: " + availableDoctor.getDname());
+            System.out.println("Years of experience:"+availableDoctor.getyearsofexperience());
+            System.out.println("rating of doctor: " + availableDoctor.getrating());
+            availableDoctor.getReview();
+            
+        }
+        System.out.println("Enter the name of the available doctor you want to select:");
+        String choice = sc.next();
+        int index = getDoctorIndex(doctors, choice);
+        System.out.println("Selected doctor: " + doctors.get(index).getDname());
+        System.out.println();
+        System.out.println("doctors side---------");
+        // System.out.println("Patient ID: " + patients.get(0).getPid());
+        // System.out.println("Patient Name: " + patients.get(0).getPname());
+        // System.out.println("Patient Problem: " + patients.get(0).getProblem());
+        // Treatment treatment = new Treatment(patients.get(0), doctors.get(index));
+        treatments.add(new Treatment(patients.get(0), doctors.get(index)));
+        treatments.get(0).doTreatment();
+        System.out.println("patients side---------");
+        System.out.println("Prescribed medicine: " + treatments.get(0).getMedicine());
+        System.out.println("enter rating");
+        float r=sc.nextFloat();
+        patients.get(0).setRating(r, doctors.get(index));
+        System.out.println("enter review");
+        String review=sc.next();
+        patients.get(0).setReview(doctors.get(index),review);
+}
+
+
+    public static int getDoctorIndex(ArrayList<Doctor> doctors, String choice) {
+        for (int i = 0; i < doctors.size(); i++) {
+            if (choice.equals(doctors.get(i).getDname())) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    public static ArrayList<Doctor> search(ArrayList<Doctor> doctors,String req){
+        ArrayList<Doctor> availableDoctors = new ArrayList<>();
+        for (Doctor doctor : doctors) {
+            if (doctor.isAvailable() && req.equals(doctor.getSpec())) {
+                availableDoctors.add(doctor);
+            }
+        }
+        return availableDoctors;
+}
+}
+
+
+SQL comments
+//     public static void main(String[] args) {
+//          String url="jdbc:mysql://localhost:3306/southwind";
+//      String username="root";
+//        String password="Nehas123";
+//                 try {
+//           Class.forName("com.mysql.cj.jdbc.Driver");
+//             Connection conn = DriverManager.getConnection(url, username, password);
+//            Statement statement=conn.createStatement();
+//            String sql="select * from emp";
+
+//            ResultSet resultSet=statement.executeQuery(sql);
+//         // String sql="give sql queries"
+         
+// while(resultSet.next()){
+//     System.out.println(resultSet.getString(1)+" "+resultSet.getString(3)+" "+resultSet.getString(4));
+// }
+// statement.close();
+//          conn.close();
+//         }
+//         catch(Exception e){
+//             System.out.println(e);
+//         }
+        
+//     }
